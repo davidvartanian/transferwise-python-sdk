@@ -42,15 +42,16 @@ class Client:
         signature = PKCS1_v1_5.new(pkey).sign(h)
         return base64.b64encode(signature).decode()
 
-    def _request(self, url, method, headers, params=None, data: dict = None, try_again=True):
+    def _request(self, url, method, headers, params=None, payload: dict = None, try_again=True):
         try:
-            response = self.session.request(method, url, params=params, json=data, headers=headers)
+            response = self.session.request(method, url, params=params, json=payload, headers=headers)
             if response.status_code == 403 and response.headers.get('x-2fa-approval-result', None) == 'REJECTED':
                 if not try_again:
                     return response
                 approval_token = response.headers.get('x-2fa-approval')
                 approval_headers = self.get_approval_headers(approval_token)
-                return self._request(url, method, approval_headers, params, data, try_again=False)
+                return self._request(url, method, approval_headers, params, payload, try_again=False)
+            return response.json()
         except ConnectionError as e:
             self.logger.warning(e)
 
@@ -59,7 +60,7 @@ class Client:
         headers = self.get_headers()
         return self._request(api_url, 'GET', headers)
 
-    def post(self, path, data: dict):
+    def post(self, path, payload: dict):
         api_url = self.get_url(path)
         headers = self.get_headers()
-        return self._request(api_url, 'POST', headers, data=data)
+        return self._request(api_url, 'POST', headers, payload=payload)

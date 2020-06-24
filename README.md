@@ -40,6 +40,9 @@ quote = Quote.create_from_dict({
 # quote is updated with server response
 quote.post(client)  
 
+# validate account requirements
+account_requirements = quote.get_account_requirements(client)
+
 # create account
 account = Account.create_from_dict({
     'currency': 'EUR',
@@ -48,13 +51,16 @@ account = Account.create_from_dict({
     'account_holder_name': 'The Dude Inc.',
     'legal_type': 'BUSINESS',
     'details': {
-        'sort_code': '123456',
-        'account_number': '654321'
+        'legalType': 'BUSINESS',
+        'iban': 'DE51700111106050000891'
     }
 })
 
+# verify recipient account
+account.verify(account_requirements)  # proceed if there are no errors
+
 # account is updated with server response
-account.post(client)  
+account.post(client)
 
 # create transfer
 transaction_id = uuid.uuid4()  # required for request idempotency

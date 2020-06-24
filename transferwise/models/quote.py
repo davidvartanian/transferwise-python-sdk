@@ -11,3 +11,6 @@ class Quote(TFModel):
     rate_type = 'FIXED'
     target_amount = Decimal('0')
     type = None  # BALANCE_PAYOUT, BALANCE_CONVERSION
+
+    def get_account_requirements(self, client):
+        return client.get(f'{self._get_path(self._sync.get("id"))}/account-requirements')

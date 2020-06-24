@@ -5,6 +5,7 @@ class TransferRequirements(TFModel):
     """
     SEE https://api-docs.transferwise.com/#transfers-requirements
     """
+    _entity = 'transfer-requirements'
     target_account = None  # Account model
     quote = None  # Quote model
     details = None  # dict with transfer details for transfer verification

@@ -21,8 +21,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "requests",
+        "Crypto",
         "pycrypto",
+        "requests",
     ],
     python_requires='>=3.7',
 )

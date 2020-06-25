@@ -68,6 +68,9 @@ class TFModel(object):
             if value not in [v['key'] for v in group['valuesAllowed']]:
                 errors.append(group)
 
+    def attr(self, key):
+        return super().__getattribute__(key)
+
     def post(self, client, *args, **kwargs):
         data = client.post(self._get_path(**kwargs), payload=self.to_json())
         if isinstance(data, dict):

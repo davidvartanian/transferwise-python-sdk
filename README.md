@@ -102,3 +102,17 @@ fund.post(client, profile_id=profile._sync.id, transfer_id=transfer._sync.id)
 ```
 
 ## Model Architecture
+Whenever the model is sent to the API as payload, the response populates the `_sync` attribute, which is a dictionary.
+
+Thanks to `__getattribute__` magic method, properties coming from the API are available as instance attributes, e.g.: `obj.id` (where `id` is actually in `obj._sync['id']`). This way reading attributes you get the synced version from the server if exists, otherwise the local attribute is returned. In case you want to access the local attribute easily, there's also an `attr` method.
+
+Models have also a class method `get` with an optional `id` parameter. When `id` isn't specified, a list of object will be returned.
+
+In order to interact with the client, models are able to generate their own API paths through the protected method `_get_path`.
+
+# Client Architecture
+The client is very simple. To instance it, it needs your API token.
+
+The `get` and `post` methods accept a path and extra parameters to build and submit a request to the API
+
+Requests are made via the `requests` package using a `Session` instance with a custom `HTTPAdapter`, making possible to add retries if needed.

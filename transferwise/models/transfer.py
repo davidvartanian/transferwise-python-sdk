@@ -24,4 +24,9 @@ class Transfer(TFModel):
         Verify transfer data
         Raises an exception if verification didn't pass
         """
-        pass
+        errors = []
+        for req in requirements:
+            for field in req['fields']:
+                for group in field['group']:
+                    self._validate_group(group, errors)
+        return errors

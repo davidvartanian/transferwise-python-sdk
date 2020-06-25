@@ -13,4 +13,5 @@ class Quote(TFModel):
     type = None  # BALANCE_PAYOUT, BALANCE_CONVERSION
 
     def get_account_requirements(self, client):
-        return client.get(f'{self._get_path(self._sync.get("id"))}/account-requirements')
+        return client.get(f'{self._get_path(self.id)}/account-requirements',
+                          additional_headers={'Accept-Minor-Version': '1'})

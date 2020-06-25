@@ -14,10 +14,10 @@ class Client:
     def __init__(self, access_token, private_key, sandbox=True):
         self._access_token = access_token
         self._private_key = private_key
+        self._transferwise_adapter = HTTPAdapter(max_retries=5)
         self.api_base_url = config.API_SANDBOX_URL if sandbox else config.API_PRODUCTION_URL
         self.api_version = config.API_VERSION
         self.session = requests.Session()
-        self._transferwise_adapter = HTTPAdapter(max_retries=3)
         self.session.mount(self.api_base_url, self._transferwise_adapter)
         self.logger = logging.getLogger(__name__)
 
@@ -51,13 +51,17 @@ class Client:
                 approval_token = response.headers.get('x-2fa-approval')
                 approval_headers = self.get_approval_headers(approval_token)
                 return self._request(url, method, approval_headers, params, payload, try_again=False)
+            if not response.ok:
+                self.logger.warning(response.json())
             return response.json()
         except ConnectionError as e:
             self.logger.warning(e)
 
-    def get(self, path):
+    def get(self, path, additional_headers=None):
         api_url = self.get_url(path)
         headers = self.get_headers()
+        if additional_headers:
+            headers.update(additional_headers)
         return self._request(api_url, 'GET', headers)
 
     def post(self, path, payload: dict):

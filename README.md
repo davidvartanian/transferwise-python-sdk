@@ -95,10 +95,10 @@ transfer.post(client)
 
 # fund transfer
 fund = Fund.create_from_dict({
-    'profile': profile,
-    'transfer': transfer,
     'type': 'BALANCE'
 })
-fund.post(client)
+fund.post(client, profile_id=profile._sync.id, transfer_id=transfer._sync.id)
 
 ```
+
+## Model Architecture

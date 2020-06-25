@@ -1,6 +1,8 @@
 # TransferWise Python SDK
 An unofficial Python SDK to facilitate the use of the TransferWise API.
 
+![release](https://travis-ci.org/davidvartanian/transferwise-python-sdk.svg?branch=master)
+
 ## Installation
 ```bash
 $ pip install transferwise-python-sdk

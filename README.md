@@ -1,7 +1,7 @@
 # TransferWise Python SDK
 An unofficial Python SDK to facilitate the use of the TransferWise API.
 
-![release](https://travis-ci.org/davidvartanian/transferwise-python-sdk.svg?branch=master)
+[![Build Status](https://travis-ci.org/davidvartanian/transferwise-python-sdk.svg?branch=master)](https://travis-ci.org/davidvartanian/transferwise-python-sdk)
 
 ## Installation
 ```bash
@@ -24,9 +24,9 @@ from transferwise.models import (
 )
 
 
-access_token = os.environ.get('TRANSFERWISE_ACCESS_TOKEN')
+api_token = os.environ.get('TRANSFERWISE_API_TOKEN')
 private_key = os.environ.get('TRANSFERWISE_PRIVATE_KEY')
-client = Client(access_token, private_key, sandbox=True)
+client = Client(api_token, private_key, sandbox=True)
 
 # get profile
 profile = Profile.get(client)

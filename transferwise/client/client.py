@@ -1,19 +1,24 @@
 import base64
-
 import requests
-from Crypto.Hash import SHA256
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
 from requests.adapters import HTTPAdapter
 from requests.exceptions import ConnectionError
 from transferwise.client import config
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 import logging
 
 
 class Client:
-    def __init__(self, access_token, private_key, sandbox=True):
-        self._access_token = access_token
-        self._private_key = private_key
+    def __init__(self, api_token, private_key=None, sandbox=True):
+        self._api_token = api_token
+        if private_key:
+            self._private_key = serialization.load_pem_private_key(
+                private_key,
+                password=None,
+                backend=default_backend()
+            )
         self._transferwise_adapter = HTTPAdapter(max_retries=5)
         self.api_base_url = config.API_SANDBOX_URL if sandbox else config.API_PRODUCTION_URL
         self.api_version = config.API_VERSION
@@ -26,7 +31,7 @@ class Client:
 
     def get_headers(self):
         return {'Content-Type': 'application/json',
-                'Authorization': f'Bearer {self._access_token}'}
+                'Authorization': f'Bearer {self._api_token}'}
 
     def get_approval_headers(self, approval_token):
         headers = self.get_headers()
@@ -37,17 +42,24 @@ class Client:
         return headers
 
     def _get_approval_signature(self, approval_token: str):
-        h = SHA256.new(approval_token.encode())
-        pkey = RSA.importKey(self._private_key)
-        signature = PKCS1_v1_5.new(pkey).sign(h)
+        signature = self._private_key.sign(
+            approval_token,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
         return base64.b64encode(signature).decode()
 
     def _request(self, url, method, headers, params=None, payload: dict = None, try_again=True):
         try:
             response = self.session.request(method, url, params=params, json=payload, headers=headers)
-            if response.status_code == 403 and response.headers.get('x-2fa-approval-result', None) == 'REJECTED':
+            approval_rejected = response.headers.get('x-2fa-approval-result', None) == 'REJECTED'
+            if self._private_key and not response.ok and approval_rejected:
                 if not try_again:
-                    return response
+                    self.logger.warning(response.json())
+                    return response.json()
                 approval_token = response.headers.get('x-2fa-approval')
                 approval_headers = self.get_approval_headers(approval_token)
                 return self._request(url, method, approval_headers, params, payload, try_again=False)

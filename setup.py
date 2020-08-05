@@ -6,8 +6,8 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name='transferwise-python-sdk',
-    version='0.0.1',
+    name="transferwise-python-sdk",
+    version="0.0.1",
     author="David Vartanian",
     author_email="davidvartanian@posteo.de",
     description="A light TransferWise SDK for Python",
@@ -20,9 +20,6 @@ setuptools.setup(
         "License :: GNU General Public License v3.0",
         "Operating System :: OS Independent",
     ],
-    install_requires=[
-        "cryptography",
-        "requests",
-    ],
-    python_requires='>=3.6',
+    install_requires=open("requirements.txt", "r").read().splitlines(),
+    python_requires=">=3.6",
 )

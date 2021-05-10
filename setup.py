@@ -7,17 +7,19 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="transferwise-python-sdk",
-    version="0.0.1",
+    version="0.0.2",
     author="David Vartanian",
     author_email="davidvartanian@posteo.de",
     description="A light TransferWise SDK for Python",
+    license="gpl-3.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/davidvartanian/transferwise-python-sdk",
+    download_url="https://github.com/davidvartanian/transferwise-python-sdk/archive/v0.0.2.tar.gz",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: GNU General Public License v3.0",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     install_requires=open("requirements.txt", "r").read().splitlines(),

@@ -60,7 +60,7 @@ class Client:
                 if not try_again:
                     self.logger.warning(response.json())
                     return response.json()
-                approval_token = response.headers.get('x-2fa-approval')
+                approval_token = response.headers.get('x-2fa-approval').encode('UTF-8')
                 approval_headers = self.get_approval_headers(approval_token)
                 return self._request(url, method, approval_headers, params, payload, try_again=False)
             if not response.ok:

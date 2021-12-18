@@ -44,10 +44,7 @@ class Client:
     def _get_approval_signature(self, approval_token: str):
         signature = self._private_key.sign(
             approval_token,
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
-            ),
+            padding.PKCS1v15(),
             hashes.SHA256()
         )
         return base64.b64encode(signature).decode()
